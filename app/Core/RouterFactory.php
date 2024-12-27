@@ -15,7 +15,10 @@ final class RouterFactory
 	public static function createRouter(): RouteList
 	{
 		$router = new RouteList;
+		$router->addRoute('users/default', 'Users:Userdefault');
+		$router->addRoute('users/edit/<id>', 'Users:edit');
 		$router->addRoute('prihlaseni/', 'Sign:in');
+		$router->addRoute('sign/<action>', 'Sign:in');
 		$router->addRoute('editacePrispevku/<postId>', 'Post:manipulate');
         $router->addRoute('vytvoreniPrispevku/', 'Post:manipulate', Nette\Application\Routers\Route::ONE_WAY);
 		$router->addRoute('vytvoreni/prispevku/', 'Post:manipulate');

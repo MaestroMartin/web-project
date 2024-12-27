@@ -23,7 +23,7 @@ class PostFacade
     private LinkGenerator $linkGenerator;
 
     public function __construct(
-        private Explorer $db,
+        private Explorer $database,
         TemplateFactory $templateFactory,
         LinkGenerator $linkGenerator,
         // <-- nový parametr pro jméno autora z konfigurace
@@ -34,24 +34,24 @@ class PostFacade
 
     public function getAll(): Selection
     {
-        return $this->db->table('post');
+        return $this->database->table('post');
     }
 
-    public function getById(int $id): ?ActiveRow
+    public function getById(int $postid): ?ActiveRow
     {
-        return $this->getAll()->get($id);
+        return $this->getAll()->get($postid);
     }
 
-    public function insert(array $values): ActiveRow
+    public function insert(array $data): ActiveRow
     {
         // Uložíme jméno autora z configu, pokud není ve $values explicitně uvedeno
-        if (!isset($values['author_name'])) {
-            $values['author_name'] = 'anonymous';
+        if (!isset($data['author_name'])) {
+            $data['author_name'] = 'anonymous';
         }
 
-        $retVal = $this->getAll()->insert($values);
+        $retVal = $this->getAll()->insert($data);
 
-        /* Mail send START (beze změny)
+         //Mail send START (beze změny)
         if (Debugger::$productionMode) {
             $latte = $this->templateFactory->createTemplate();
             $latte->getLatte()->addProvider('uiControl', $this->linkGenerator);
@@ -67,7 +67,7 @@ class PostFacade
             $sender = new SendmailMailer();
             $sender->send($message);
         }
-        // Mail send END */
+        // Mail send END 
 
         return $retVal; 
     }

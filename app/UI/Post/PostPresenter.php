@@ -3,12 +3,13 @@
 declare(strict_types=1);
 
 
-namespace App\Presenters;
+namespace App\UI\Post;
 
 use Nette\Application\UI\Presenter;
 use App\Model\PostFacade;
 use App\Model\CommentFacade;
 use Nette\Application\UI\Form;
+use Nette;
 
 class PostPresenter extends Presenter
 {   
@@ -19,39 +20,39 @@ class PostPresenter extends Presenter
         private CommentFacade $commentFacade,
     ) { }
 
-    public function actionManipulate(int $postId = 0): void
+    public function actionManipulate(int $postid = 0): void
     {
         if (!$this->getUser()->isLoggedIn()) {
             $this->flashMessage('Pro tuto akci je nutné se přihlásit.', 'error');
             $this->redirect('Sign:in', $this->storeRequest());
         }
 
-        if ($postId == 0) {
+        if ($postid == 0) {
             return;
         }
 
-        $post = $this->postFacade->getById($postId);
+        $post = $this->postFacade->getById($postid);
         if (!$post) {
             $this->error('Omlouváme se, ale Vámi zvolený příspěvek neexistuje!!!', 404);
         }
         $this['postForm']->setDefaults($post->toArray());
     }
 
-    public function renderManipulate(int $postId = 0)
+    public function renderManipulate(int $postid = 0)
     {
-        $this->template->postId = $postId;
+        $this->template->postid = $postid;
     }
 
-    public function renderShow(int $postId): void
+    public function renderShow(int $postid): void
     {
-        $post = $this->postFacade->getById($postId);
+        $post = $this->postFacade->getById($postid);
 
         if (!$post) {
             $this->error('Omlouváme se, ale Vámi zvolený příspěvek neexistuje!!!', 404);
         }
 
         $this->template->post = $post;
-        $this->template->comments = $this->commentFacade->getCommentsByPostId($postId);
+        $this->template->comments = $this->commentFacade->getCommentsByPostId($postid);
     }
 
     protected function createComponentCommentForm(): Form
@@ -73,15 +74,15 @@ class PostPresenter extends Presenter
         return $form;
     }
 
-    public function commentFormSucceeded(Form $form, \stdClass $values): void
+    public function commentFormSucceeded(Form $form, \stdClass $data): void
     {
-        $postId = $this->getParameter('postId');
+        $postId = $this->getParameter('postid');
 
         $this->commentFacade->insert([
             'post_id' => $postId,
-            'name' => $values->name,
-            'email' => $values->email,
-            'content' => $values->content,
+            'name' => $data->name,
+            'email' => $data->email,
+            'content' => $data->content,
         ]);
 
         $this->flashMessage('Děkuji za komentář', 'success');

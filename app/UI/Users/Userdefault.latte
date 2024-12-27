@@ -1,0 +1,28 @@
+{block content}
+<h1>Seznam uživatelů</h1>
+
+<table>
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>username</th>
+            <th>E-mail</th>
+            <th>Akce</th>
+        </tr>
+    </thead>
+    <tbody>
+        {foreach $users as $user}
+            <tr>
+                <td>{$user->id}</td>
+                <td>{$user->username}</td>
+                <td>{$user->email}</td>
+                <td>
+                    {if $currentUserId === $user->id}
+                        <a n:href="edit $user->id">Upravit</a>
+                    {/if}
+                </td>
+            </tr>
+        {/foreach}
+    </tbody>
+</table>
+{/block}

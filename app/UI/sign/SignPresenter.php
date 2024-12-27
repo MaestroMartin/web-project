@@ -1,16 +1,23 @@
 <?php
 
-
-namespace App\Presenters;
+namespace App\UI\Sign;
 
 use ErrorException;
 use Nette\Application\UI\Presenter;
 use Nette\Application\UI\Form;
+use Nette\Database\Explorer;
+use Nette\Security\Role;
+use Nette\Security\Authenticator;
 
 class SignPresenter extends Presenter
 {
-
     private string $storeRequestId = '';
+    private Explorer $database;
+
+    public function __construct(Explorer $database)
+    {
+        $this->database = $database;
+    }
 
     public function actionIn(string $storeRequestId = '')
     {
@@ -21,7 +28,7 @@ class SignPresenter extends Presenter
     {
         $this->user->logout(true);
         $this->flashMessage('Odhlášení proběhlo úspěšně', 'success');
-        $this->redirect('Homepage:');
+        $this->redirect('Home:');
     }
 
     protected function createComponentSignInForm(): Form
@@ -42,14 +49,32 @@ class SignPresenter extends Presenter
     public function signInFormSucceeded(Form $form, \stdClass $values): void
     {
         try {
+            // Načtení uživatele z databáze
+            $user = $this->database->table('users')
+                ->where('username', $values->username)
+                ->fetch();
+    
+            if (!$user) {
+                throw new ErrorException('Uživatel nebyl nalezen.');
+            }
+    
+            // Ověření hesla (přímé porovnání hesla; doporučuje se hashování)
+            if ($user->password !== $values->password) {
+                throw new ErrorException('Nesprávné heslo.');
+            }
+    
+            // Přihlášení uživatele pouze na základě ID nebo username
+            $this->user->setAuthenticator(new \Nette\Security\SimpleAuthenticator([
+                $values->username => $values->password
+            ]));
             $this->user->login($values->username, $values->password);
+    
             $this->flashMessage('Úspěšně přihlášeno.', 'success');
             $this->restoreRequest($this->storeRequestId);
-            $this->redirect('Homepage:');
+            $this->redirect('Home:');
         } catch (ErrorException $e) {
             $form->addError('Nesprávné přihlašovací jméno nebo heslo.');
-            
         }
     }
-
+    
 }

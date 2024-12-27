@@ -20,7 +20,7 @@ class CommentFacade
 
     public function getAll(): Selection
     {
-        return $this->database->table('comment');
+        return $this->database->table('comments');
     }
 
     public function getById(int $postid): ?ActiveRow
