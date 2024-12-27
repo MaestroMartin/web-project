@@ -58,7 +58,6 @@ class SignPresenter extends Presenter
                 throw new ErrorException('Uživatel nebyl nalezen.');
             }
     
-            // Ověření hesla (přímé porovnání hesla; doporučuje se hashování)
             if ($user->password !== $values->password) {
                 throw new ErrorException('Nesprávné heslo.');
             }

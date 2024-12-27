@@ -1,0 +1,39 @@
+{block content}
+<h1>Seznam uživatelů</h1>
+
+<p>
+    Přihlášený uživatel: 
+    <strong>{$loggedInUser->username}</strong>
+</p>
+
+<!-- Debugging aktuálních hodnot -->
+{dump $loggedInUser}
+{dump $users}
+
+<table>
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Uživatelské jméno</th>
+            <th>E-mail</th>
+            <th>Akce</th>
+        </tr>
+    </thead>
+    <tbody>
+        {foreach $users as $currentUser}
+            <tr>
+                <td>{$currentUser->id}</td>
+                <td>{$currentUser->username}</td>
+                <td>{$currentUser->email}</td>
+                <td>
+                    <!-- Podmínka pro zobrazení tlačítka "Editovat" -->
+                    {if $loggedInUser->username === $currentUser->username}
+                        <a href="{$presenter->link('edit', $currentUser->username)}">Editovat</a>
+                    {/if}
+
+                </td>
+            </tr>
+        {/foreach}
+    </tbody>
+</table>
+{/block}
