@@ -20,8 +20,7 @@ final class RouterFactory
 		$router->addRoute('prihlaseni/', 'Sign:in');
 		$router->addRoute('sign/<action>', 'Sign:in');
 		$router->addRoute('editacePrispevku/<postId>', 'Post:manipulate');
-        $router->addRoute('vytvoreniPrispevku/', 'Post:manipulate', Nette\Application\Routers\Route::ONE_WAY);
-		$router->addRoute('vytvoreni/prispevku/', 'Post:manipulate');
+        $router->addRoute('vytvoreniPrispevku/', 'Post:add');
 		$router->addRoute('<presenter>/<action>[/<id>]', 'Home:default');
 		return $router;
 	}

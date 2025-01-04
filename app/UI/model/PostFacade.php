@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Model;
+namespace App\UI\Model;
 
 use Nette\Database\Explorer;
 use Nette\Database\Table\ActiveRow;
@@ -14,32 +14,25 @@ use Nette\Mail\SendmailMailer;
 use Nette\SmartObject;
 use Nette\Utils\DateTime;
 use Tracy\Debugger;
+use App\UI\Model\BaseManager;
 
-class PostFacade
+class PostFacade extends BaseManager
 {
     use SmartObject;
 
-    private TemplateFactory $templateFactory;
-    private LinkGenerator $linkGenerator;
 
     public function __construct(
-        private Explorer $database,
-        TemplateFactory $templateFactory,
-        LinkGenerator $linkGenerator,
+         Explorer $database,
+        private TemplateFactory $templateFactory,
+        private LinkGenerator $linkGenerator,
         // <-- nový parametr pro jméno autora z konfigurace
     ) {
-        $this->templateFactory = $templateFactory;
-        $this->linkGenerator = $linkGenerator;
+        parent::__construct($database);
     }
 
-    public function getAll(): Selection
+    public function getTableName(): string
     {
-        return $this->database->table('post');
-    }
-
-    public function getById(int $postid): ?ActiveRow
-    {
-        return $this->getAll()->get($postid);
+        return 'post';
     }
 
     public function insert(array $data): ActiveRow
@@ -49,7 +42,7 @@ class PostFacade
             $data['author_name'] = 'anonymous';
         }
 
-        $retVal = $this->getAll()->insert($data);
+        $retVal = parent::insert($data);
 
          //Mail send START (beze změny)
         if (Debugger::$productionMode) {

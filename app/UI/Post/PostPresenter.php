@@ -5,37 +5,45 @@ declare(strict_types=1);
 
 namespace App\UI\Post;
 
-use Nette\Application\UI\Presenter;
-use App\Model\PostFacade;
-use App\Model\CommentFacade;
+use App\UI\Home\BasePresenter;
+use App\UI\Model\PostFacade;
+use App\UI\Model\CommentFacade;
+use App\UI\Post\manipulate\PresenterTrait;
 use Nette\Application\UI\Form;
-use Nette;
 
-class PostPresenter extends Presenter
+
+class PostPresenter extends BasePresenter
 {   
-
+    use PresenterTrait;
 
     public function __construct(
         private PostFacade $postFacade,
         private CommentFacade $commentFacade,
     ) { }
-
-    public function actionManipulate(int $postid = 0): void
+    
+    private function checkPrivilageManipulate()
     {
         if (!$this->getUser()->isLoggedIn()) {
             $this->flashMessage('Pro tuto akci je nutné se přihlásit.', 'error');
             $this->redirect('Sign:in', $this->storeRequest());
         }
+    }
+    
+    public function actionAdd()
+    {
+        $this->checkPrivilageManipulate();
+       
+    }
 
-        if ($postid == 0) {
-            return;
-        }
-
-        $post = $this->postFacade->getById($postid);
+    public function actionEdit(int $postId = 0): void
+    {
+        $this->checkPrivilageManipulate();
+        
+        $post = $this->postFacade->getById($postId);
         if (!$post) {
             $this->error('Omlouváme se, ale Vámi zvolený příspěvek neexistuje!!!', 404);
         }
-        $this['postForm']->setDefaults($post->toArray());
+        $this->entity = $post->toArray();
     }
 
     public function renderManipulate(int $postid = 0)
@@ -87,39 +95,6 @@ class PostPresenter extends Presenter
 
         $this->flashMessage('Děkuji za komentář', 'success');
         $this->redirect('this');
-    }
-
-    protected function createComponentPostForm(): Form
-    {
-        $form = new Form;
-        $form->addText('title', 'Titulek:')
-            ->setRequired();
-        $form->addTextArea('content', 'Obsah:')
-            ->setRequired();
-
-        $form->addSubmit('send', 'Uložit a publikovat');
-        $form->onSuccess[] = [$this, 'postFormSucceeded'];
-
-        return $form;
-    }
-
-    public function postFormSucceeded(Form $form, array $values): void
-    {
-        if (!$this->getUser()->isLoggedIn()) {
-            $this->error('Pro vytvoření, nebo editování příspěvku se musíte přihlásit.');
-        }
-
-        $postId = $this->getParameter('postId');
-
-        if ($postId) {
-            $post = $this->postFacade->getById($postId);
-            $post->update($values);
-        } else {
-            $post = $this->postFacade->insert($values);
-        }
-
-        $this->flashMessage('Příspěvek byl úspěšně publikován.', 'success');
-        $this->redirect('show', $post->id);
-    }
+    }    
 
 }

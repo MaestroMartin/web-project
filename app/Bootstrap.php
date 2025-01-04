@@ -47,4 +47,25 @@ class Bootstrap
 		$this->configurator->addConfig($configDir . '/common.neon');
 		$this->configurator->addConfig($configDir . '/services.neon');
 	}
+
+	public static function boot(): Configurator
+	{
+		$configurator = new Configurator;
+		$appdir = dirname(__DIR__);
+
+		$configurator->setDebugMode(true);
+		$configurator->enableTracy($appdir . '/log');	
+
+		$configurator->setTimeZone('Europe/Prague');	
+		$configurator->setTempDirectory($appdir . '/temp');
+
+		$configurator->createRobotLoader()
+			->addDirectory($appdir)
+			->register();
+		
+		$configurator->addConfig($appdir . '/config/common.neon');
+		$configurator->addConfig($appdir . '/config/local.neon');	
+
+		return $configurator;
+	}
 }

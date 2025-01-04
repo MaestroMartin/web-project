@@ -3,34 +3,18 @@
 declare(strict_types=1);
 
 
-namespace App\Model;
+namespace App\UI\Model;
 
+use App\UI\Model\BaseManager;
 use Nette\Database\Explorer;
 use Nette\Database\Table\ActiveRow;
 use Nette\Database\Table\Selection;
-use Nette\SmartObject;
 
-class CommentFacade
+class CommentFacade extends BaseManager
 {
-    use SmartObject;
-
-    public function __construct(
-        private Explorer $database,
-    ) { }
-
-    public function getAll(): Selection
+    public function getTableName(): string
     {
-        return $this->database->table('comments');
-    }
-
-    public function getById(int $postid): ?ActiveRow
-    {
-        return $this->getAll()->get($postid);
-    }
-
-    public function insert(array $data): ActiveRow
-    {
-        return $this->getAll()->insert($data);
+        return 'comments';
     }
 
     public function getCommentsByPostId(int $postId, int $limit = null): Selection
