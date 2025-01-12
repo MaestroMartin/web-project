@@ -12,20 +12,22 @@ use App\UI\Post\grit\ControlFactory; // Ensure this path is correct and the clas
 
 trait ControlTrait
 {
-    public function __construct(
-        private PostFacade $postFacade,
-    )
-    {}
-
-    private ControlFactory $postGridControlFactory;
+    private ControlFactory $postGritControlFactory;
+    private ?int $authorId = null;
+    
     
     
     public function injectPostGritControlFactory(ControlFactory $ControlFactory): void
     {
-        $this->postGridControlFactory = $ControlFactory;
+        $this->postGritControlFactory = $ControlFactory;
     }
-    protected function createComponentPostGrid(): Control
+    protected function createComponentPostGrid()
     {
-        return $this->postGridControlFactory->create();
+        if (
+            !$this->postGritControlFactory
+        ){
+            $this->error('stránka nebyla nalezena',404);
+        }
+        return $this->postGritControlFactory->create($this->authorId);
     }   
 }

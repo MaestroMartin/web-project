@@ -24,14 +24,20 @@ class Control extends C
 
     public function render  (): void
     {
-        $this->template->render();
+        $this->template->setFile('/default.latte');
+        $this->template->render( );
     }
 
     public function creatComponentForm()
     {
         $form = $this->formFactory->create($this->entity);
+        $form->onSumbit[]= [$this, 'onSubmit'];
         $form->onSuccess[] = $this->onsuccess;
         return $form;
+    }
+    public function onSubmit()
+    {
+        $this->redrawControl('form');
     }
 
 }

@@ -5,23 +5,29 @@ declare(strict_types=1);
 
 namespace App\UI\User\Sign\In;
 
+use App\Core\FormFactory as CoreFormFactory;
 use Exception;
 use Nette\Application\UI\Form;
-use Nette\Database\Explorer;
+use Nette\SmartObject;
 use stdClass;
 use Nette\security\User;
 
 class FormFactory
-{
+{   
+    use SmartObject;
+
     public function __construct(
         private User $user,
-
-    )
-    {
-    }
+        private CoreFormFactory $formFactory,
+        private \App\UI\User\Sign\In\ControlFactory $signInFormFactory
+    ){}
 
     public function create(): Form{
-        $form = new Form;
+        
+        $form = $this->formFactory->create();
+
+        $form->getElementPrototype()->setAttribute('novalidate','novalidate');
+
         $form->addEmail('email', 'Váš E-mail:')
             ->setRequired('Prosím vyplňte svůj E-mail:.');
         
@@ -34,10 +40,12 @@ class FormFactory
         return $form;
     }
 
+    
+
     public function onSuccess(Form $form, stdClass $values): void
     {
         try {
-            $this->user->login($values->username, $values->password);
+            $this->user->login($values->email, $values->password);
         } catch (Exception $e) {
             $form->addError('Nesprávné přihlašovací jméno nebo heslo.');
         }

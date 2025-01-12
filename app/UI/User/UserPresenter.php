@@ -32,7 +32,7 @@ class UserPresenter extends Presenter
     $identity = $this->user->getIdentity();
     $identity->username = $identity->id; // Přidáme uživatelské jméno jako atribut
 
-    $this->template->users = $this->database->table('users');
+    $this->template->users = $this->database->table('user');
     $this->template->loggedInUser = $identity;
 }
 
@@ -46,7 +46,7 @@ class UserPresenter extends Presenter
         $this->redirect('User:default');
     }
 
-    $user = $this->database->table('users')->where('username', $username)->fetch();
+    $user = $this->database->table('user')->where('username', $username)->fetch();
 
     if (!$user) {
         $this->flashMessage('Uživatel nebyl nalezen.', 'error');

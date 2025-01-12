@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width">
+
+	<title>{ifset title}{include title|stripHtml} | {/ifset}Nette Web</title>
+
+	<link rel="stylesheet" href="{$basePath}/css/style.css">
+</head>
+
+<body>
+	<div n:foreach="$flashes as $flash" n:class="flash, $flash->type">{$flash->message}</div>
+
+	<ul class="navig">
+		<li><a n:href="Home:"class="ajax">Články</a></li>
+		{if $user->isAllowed('front','logout')}
+			<li><a n:href="Sign:out"class="ajax">Odhlásit</a></li>
+		{else}
+			<li><a n:href="Sign:in"class="ajax">Přihlásit</a></li>
+			 
+		{/if}
+	</ul>
+	<a n:href="this, lang='cs'"class="ajax">českyt</a>|<a n:href="this,lang = 'en"class="ajax">English</a>
+{include content}	
+
+	{block scripts}
+	<script src="https://nette.github.io/resources/js/3/netteForms.min.js"></script>
+	<script src="{$basePath}/js/main.js"></script>
+	<script	src="https://code.jquery.com/jquery-3.7.1.min.js"
+  	integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo="
+ 	 crossorigin="anonymous"></script>
+	 <script src="/js/ajax/plugins/nette.ajax.js"></script>
+	{/block}
+</body>
+</html>

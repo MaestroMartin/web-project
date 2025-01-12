@@ -6,6 +6,7 @@ namespace App\UI\Model;
 
 use App\UI\Model\BaseManager;
 use Nette\Database\Table\Selection;
+use App\UI\Model\entity\Role;
 
 class RoleFacade extends BaseManager
 {
@@ -21,10 +22,21 @@ class RoleFacade extends BaseManager
         
     }
 
-    public function findByUserIdToSelect(int $id): array
+    public function findByUserIdToSelect(int $id, bool $returnAsEntity= false): array
     {
-        return $this->findByUserId($id)
+        $retVal= $this->findByUserId($id)
         ->fetchPairs('id', 'name');
-        
+        return $retVal;
     }
-}
+
+
+    public function findAllByUserIdAsEntity(int $id)
+    {
+        return array_map(
+            function(string $name) use ($id){
+                return  Role::create($id,$name);
+            },
+            $this->findByUserIdToSelect($id),
+        );
+    }
+} 

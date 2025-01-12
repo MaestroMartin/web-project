@@ -12,7 +12,7 @@ interface ControlFactory
 {
 
     public function create(
-        ActiveRow $item,
+        ?int $authorId,
     ): Control;
     
 }

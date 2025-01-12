@@ -1,0 +1,19 @@
+<h2>komentáře</h2>
+
+{snippet flashes}
+    <div n:foreach="$flashes as $flash" n:class="flash, $flash->type">{$flash->message}</div>
+{/snippet}
+
+
+<div class="coments"n:snippet="coments" data-ajax-append= "true">
+    {foreach $coments as $comment}
+        {control postCommentGridItemMultiple-$comment->id}
+    {/foreach}    
+</div>
+<div class="paginator">
+    <a n:href= "page! 1">to fisrt page</a>
+    <a  n:for="$i = max(1,$page -3); $i <= min($numOfPages, $page +3); $i++"n:class="dalsi--odkaz, $page == $i ? aktualni--odkaz">{$i}</a>
+    <a n:href= "page! $numOfPages">to last page</a>
+</div>    
+
+<a n:href= "LoadMore!!" class= "pagination--load__more ajax">to fisrt page</a>

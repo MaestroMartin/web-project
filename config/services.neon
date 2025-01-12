@@ -1,9 +1,30 @@
 services:
+	- App\UI\Model\MyAuthenticator
+	- App\UI\Model\MailSender(lattePath: %emailTemplatePath%)
 	- App\Core\RouterFactory::createRouter
+	- App\UI\Model\AuthorizatorFactory::create
+	- App\UI\Model\SettingManager
+	- App\UI\Model\PostFacade
+	myTranslator: App\UI\Model\MyTranslator(defaultLang: %defaultLang%)
+	nette.latteFactory:
+		setup:
+			- addfilter('translate', [@myTranslator, 'translate'])
+	
+	
+	
 
 
 search:
-	-	in: %appDir%
+	- in: %appDir%/UI/model
 		classes:
 			- *Factory
 			- *Facade
+	- in: %appDir%/Core
+		classes:
+			- *Factory
+	
+			
+
+			
+			
+

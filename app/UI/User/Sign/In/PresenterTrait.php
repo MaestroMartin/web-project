@@ -4,13 +4,12 @@ declare(strict_types=1);
 
 namespace App\UI\User\Sign\In;
 
-use App\UI\Home\BasePresenter;
-use App\UI\User\Sign\In\FormFactory;
-use Nette\Application\UI\Form;
+
 
 trait PresenterTrait
 {
     private ControlFactory $userSignInControlFactory;
+    private string $storeRequestId= '';
     
     public function injectUserSignInFormFactory(ControlFactory $ConrtrolFactory): void
     {
@@ -18,7 +17,10 @@ trait PresenterTrait
     }
     protected function createComponentSignInForm(): Control
     {
-        return $this->userSignInFormFactory->create();
+        if (!$this->userSignInControlFactory){
+            $this->error('Stránka nebyla nalezena', 404);
+        }
+        return $this->userSignInFormFactory->create([$this, 'onInSignFormSucces']);
     }
     public function onInSignFormSuccess(): void
     {      
@@ -26,4 +28,6 @@ trait PresenterTrait
         $this->restoreRequest($this->storeRequestId);
         $this->redirect('Home:');
     }
+    
+
 }

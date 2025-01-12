@@ -1,0 +1,14 @@
+{block content}
+    <p><a n:href="Home:default" class="ajax">← zpět na výpis příspěvků</a></p>
+    
+    {control postDetailControl}
+
+    {if $user->isAllowed('comment','add')}
+        <h2>vložte nový přízpěvek<h2>
+
+        {control commentForm}
+    {/if}
+    {if $user->isAllowed('commentGrid', 'view')}
+        {control commentGrid}
+    {/if}
+{/block}

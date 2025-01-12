@@ -1,0 +1,10 @@
+
+<div class= "date">{$item->created_at|date: 'F j, Y'}</div>
+
+<h1 n:block= "title">{$item->title}</h1>
+
+<a n:if="$user->isAllowed($item,'edit')" href="{plink Post:edit $item->id}">Upravit přízpěvek</a>
+<a n:if="$user->isAllowed($item,'delete')" n:href="delet!">Smazat přízpěvek</a>
+
+
+<div class="post">{$item->content}</div>

@@ -7,14 +7,11 @@ namespace App\UI\Model;
 use Nette\Database\Explorer;
 use Nette\Database\Table\ActiveRow;
 use Nette\Database\Table\Selection;
-use Nette\Application\UI\TemplateFactory;
-use Nette\Application\LinkGenerator;
-use Nette\Mail\Message;
-use Nette\Mail\SendmailMailer;
 use Nette\SmartObject;
 use Nette\Utils\DateTime;
-use Tracy\Debugger;
 use App\UI\Model\BaseManager;
+use App\UI\Model\Entity\PostResource;
+
 
 class PostFacade extends BaseManager
 {
@@ -22,10 +19,10 @@ class PostFacade extends BaseManager
 
 
     public function __construct(
-         Explorer $database,
-        private TemplateFactory $templateFactory,
-        private LinkGenerator $linkGenerator,
-        // <-- nový parametr pro jméno autora z konfigurace
+        Explorer $database,
+        private MailSender $mailSender,
+        protected PostFacade $postFacade
+       
     ) {
         parent::__construct($database);
     }
@@ -35,46 +32,56 @@ class PostFacade extends BaseManager
         return 'post';
     }
 
-    public function insert(array $data): ActiveRow
-    {
-        // Uložíme jméno autora z configu, pokud není ve $values explicitně uvedeno
-        if (!isset($data['author_name'])) {
-            $data['author_name'] = 'anonymous';
-        }
+    public function insert(array $values): ActiveRow
+    {      
 
-        $retVal = parent::insert($data);
+        $retVal = parent::insert($values);
 
-         //Mail send START (beze změny)
-        if (Debugger::$productionMode) {
-            $latte = $this->templateFactory->createTemplate();
-            $latte->getLatte()->addProvider('uiControl', $this->linkGenerator);
-
-            $message = new Message();
-            $message->setFrom('default@news.cz');
-            $message->addTo('default@news.cz');
-
-            $message->setHtmlBody(
-                $latte->renderToString(__DIR__ . '/addPostMail.latte', $retVal->toArray())
-            );
-
-            $sender = new SendmailMailer();
-            $sender->send($message);
-        }
-        // Mail send END 
+         
+        $this->mailSender->sendPostInserted($retVal->toArray());	
+         
 
         return $retVal; 
     }
 
-    public function getPublicPosts(int $limit = null): Selection
+    
+
+    public function getPublicPosts(int $limit = null, ?int $authorId= null ): Selection
     {
-        $retVal = $this->getAll()
-            ->where('created_at < ', new DateTime)
-            ->order('created_at DESC');
+        return $this->getAll()
+            ->where('created_at <',new DateTime)
+            ->order('created_at DESC')
+            ->limit($limit);
 
-        if ($limit) {
-            $retVal->limit($limit);
+        if ($authorId){
+            $retVal->where('author_id',$authorId);
         }
-
         return $retVal;
+    }
+    public function actionShow(int $postid)
+    {
+        $this->checkPrivilage('post','view');
+
+        $this->template->postid = $postid;
+
+            
+
+        $this->post = $this->postFacade->wrapToEntity($this->checkPostExistence($postid));
+        
+
+        $this->canCreateCommentGrid             = $this->getUser()->isAllowed('commentGrid','view');
+        $this->canCreatePostForm                = $this->getUser()->isAllowed('comment','add');
+        $this->canCreatePostDetailControl       = true;
+    }
+
+
+    public  function wrapToEntity(ActiveRow $row):PostResource
+    {
+       
+        return PostResource::create($this->getTableName(), $row);
+    }
+
+    public function delete(int $id){
+        $this->getById($id)->delete();
     }
 }

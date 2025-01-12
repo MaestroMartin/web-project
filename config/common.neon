@@ -1,4 +1,6 @@
 parameters:
+	emailTemplatePath: '%appDir%\UI\components\form.latte'
+	defaultLang: 'cs'
 
 
 application:
@@ -6,12 +8,14 @@ application:
 		4xx: Error:Error4xx
 		5xx: Error:Error5xx
 	mapping: App\UI\*\**Presenter
+	
+
 
 
 database:
-	dsn: 'sqlite::memory:'
-	user:
-	password:
+	dsn: 'mysql:host=127.0.0.1;dbname=nette'
+	user: 'nette'
+	password: 'nettePass'
 
 
 latte:
@@ -25,3 +29,17 @@ di:
 	export:
 		parameters: no
 		tags: no
+
+security:
+	users:
+		
+
+extensions:
+    console: Contributte\Console\DI\ConsoleExtension(%consoleMode%)
+    migrations: Nextras\Migrations\Bridges\NetteDI\MigrationsExtension
+
+migrations:
+    dir: %appDir%/migrations # migrations base directory
+    driver: mysql               # pgsql or mysql
+    dbal: nette               # nextras, nette, doctrine or dibi
+    withDummyData: %debugMode%  # load dummy data after migration

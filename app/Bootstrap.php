@@ -53,7 +53,7 @@ class Bootstrap
 		$configurator = new Configurator;
 		$appdir = dirname(__DIR__);
 
-		$configurator->setDebugMode(true);
+		$configurator->setDebugMode(false);
 		$configurator->enableTracy($appdir . '/log');	
 
 		$configurator->setTimeZone('Europe/Prague');	

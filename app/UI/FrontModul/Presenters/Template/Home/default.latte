@@ -1,0 +1,10 @@
+{* This is the welcome page, you can delete it *}
+{block content}
+
+    <h1 n:block="title">Default News</h1>
+    <a n:href="Post:add" n:if="$user->isAlowed('post','add')">Napsat nový příspěvek</a>
+
+    {if $user->isAllowed('postGrid', 'view')}
+        {control postGrid}
+    {/if}
+{/block}

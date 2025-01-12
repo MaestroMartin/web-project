@@ -13,12 +13,12 @@ class Control extends C
     *@var callable 
     */
 
-
+    private $onSuccess;
 
    public function __construct(
         private FormFactory $userSigninformFactory,
         private FormFactory $formFactory,
-        callable $onSuccess,
+         callable $onSuccess,
     )
     {
         $this->onSuccess = $onSuccess;
@@ -26,6 +26,7 @@ class Control extends C
 
     public function render(): void
     {
+        $this->template->setFile(__DIR__ . '/formdefault.latte');
         $this->template->render();
     }
 
@@ -33,10 +34,15 @@ class Control extends C
 
         $form = $this->userSigninformFactory->create();
 
+        $form->onSubmit[]= [$this, 'onSubmit'];
         $form->onSuccess[] = $this->onSuccess;
 
         return $form;
 
+    }
+    public function onSubmit()
+    {
+        $this->redrawControl('form');
     }
     
 }

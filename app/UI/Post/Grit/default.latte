@@ -1,7 +1,11 @@
 
 <div class="post" n:foreach="$posts as $post">
-    {control postGridItemMultiple-$post->id}
+    {var  $id=$post->id}
+    {control "postGridItemMultiple-$id"}
+
 </div>
-
-
-    
+<div class="paginator">
+    <a n:href= "page! 1">to fisrt page</a>
+    <a  n:for="$i = max(1,$page -3); $i <= min($numOfPages, $page +3); $i++"n:class="dalsi--odkaz, $page == $i ? aktualni--odkaz">{$i}</a>
+    <a n:href= "page! $numOfPages">to last page</a>
+</div>     

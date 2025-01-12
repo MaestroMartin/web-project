@@ -13,6 +13,11 @@ trait PresenterTrait
     private array $entity = [
         'id' => 0,
     ];
+
+    private bool $canCreatePostForm= false;
+
+
+
     public function injectPostManipulateControlFactory(ControlFactory $controlFactory): void
     {
         $this->postManipulateControlFactory = $controlFactory;
@@ -20,8 +25,11 @@ trait PresenterTrait
 
     public function createComponentPostForm(): Control
     {   
+        
         if (!$this->getUser()->isLoggedIn()) {
             $this->error('Pro vytvoření, nebo editování příspěvku se musíte přihlásit.');
+        }elseif($this->canCreatePostForm||!$this->postManipulateControlFactory|| !isset($this->entity['id'])){
+            $this->error('stránka nebyla nalezena', 404);
         }
 
         return $this->postManipulateControlFactory->create([$this, 'postFormSucceeded'], $this->entity);

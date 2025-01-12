@@ -9,6 +9,8 @@ namespace App\UI\Post\Grit;
 interface ControlFactory
 {
 
-    public function create(): Control;
+    public function create(
+       ?int $authoId
+    ): Control;
     
 }

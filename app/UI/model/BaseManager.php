@@ -36,4 +36,5 @@ abstract class BaseManager{
     {
         return $this->getAll()->insert($data);
     }
+    
 }

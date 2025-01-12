@@ -1,0 +1,11 @@
+<p>
+    <a n:if="$user->isAllowed($item,'delete')"n:href="delete!" class="ajax" style="float: right;">Smazat koment</a>
+    <b>
+        <a href="mailto:{$item->mail}" n:tag-if="$item->email">
+        {$item->name}
+        </a>
+    </b>
+    napsal:
+</p>
+
+<div>{$item->content}</div>

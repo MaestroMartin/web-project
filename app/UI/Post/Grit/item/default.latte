@@ -1,11 +1,8 @@
-{block content}
-    <div class="post" n:foreach="$posts as $post">
-        <div class="date">{$post->created_at|date:'F j, Y'}</div>
 
-        <h2><a href="{plink Post:show $post->id}">{$post->title}</a></h2>
+<div class="date">{$post->created_at|date:'F j, Y'}</div>
 
-        <div>{$post->content}</div>
-    </div>
-{/block}
+<h2><a href="{plink Post:show $post->id}" n:tag-if="$user->isAllowed('post','view')">{$item->title}</a></h2>
 
+<div>{$item->content}</div>
+   
     
